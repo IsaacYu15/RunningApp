@@ -15,7 +15,7 @@ const Geolocate: React.FC = () => {
   }
 
   function displayError(error: GeolocationPositionError) {
-    alert("Position is not available!" + {error});
+    alert(error.message);
   }
 
   useEffect(() => {
