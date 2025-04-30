@@ -5,7 +5,7 @@ function App() {
 
   return (
     <div>
-      <div>Hello</div>
+      <div>Running app</div>
       <Geolocate/>
     </div>
   );
