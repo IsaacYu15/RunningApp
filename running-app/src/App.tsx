@@ -1,5 +1,5 @@
 import "./App.css";
-import Geolocate from "./GeoLocate";
+import Geolocate from "./Geolocate";
 
 function App() {
 
