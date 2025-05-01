@@ -7,13 +7,27 @@ const Geolocate: React.FC = () => {
   const [timerActive, setTimerActive] = useState<Boolean>(false);
 
   function updateGeolocation(position: GeolocationPosition) {
-    setPath((prevPath) => [
-      ...(prevPath ?? []),
-      {
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
-      },
-    ]);
+
+    setPath((prevPath) => {
+
+      const lastEntry: LatLongCoordinates | undefined = prevPath?.[prevPath.length - 1];
+
+      if (
+        lastEntry &&
+        position.coords.latitude === lastEntry.latitude &&
+        position.coords.longitude === lastEntry.longitude
+      ) {
+        return prevPath;
+      }
+
+      return [
+        ...(prevPath ?? []),
+        {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        },
+      ];
+    });
   }
 
   function displayError(error: GeolocationPositionError) {

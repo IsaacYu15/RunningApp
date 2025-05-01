@@ -18,9 +18,16 @@ const DisplayCoordinates: React.FC<DisplayCoordinatesProps> = ({
   function normalizeCoordinate(
     coordinate: LatLongCoordinates
   ): LatLongCoordinates {
+
+    const latDiff = maxLat - minLat;
+    const longDiff = maxLong - minLong;
+
+    const maxDiff = Math.max(latDiff, longDiff);
+
+    //percentage as diff => lat long proprtionate => to a specific scale
     return {
-        latitude: Math.abs((coordinate.latitude - minLat) / (maxLat - minLat)) * scale,
-        longitude: Math.abs((coordinate.longitude - minLong) / (maxLong - minLong)) * scale,
+        latitude: Math.abs((coordinate.latitude - minLat) / latDiff) * (latDiff / maxDiff) * scale,
+        longitude: Math.abs((coordinate.longitude - minLong) / longDiff) * (longDiff / maxDiff) * scale,
       };
   }
 
@@ -58,8 +65,6 @@ const DisplayCoordinates: React.FC<DisplayCoordinatesProps> = ({
         drawLine(coordinates[i], coordinates[i + 1]);
       }
     }
-
-    console.log("hello", coordinates);
   }, [coordinates]);
 
   return <div id="lineContainer"></div>;
