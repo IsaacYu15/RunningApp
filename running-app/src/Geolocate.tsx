@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { LatLongCoordinates } from "./Types";
+import DisplayCoordinates from "./DisplayCoordinates";
 
 const Geolocate: React.FC = () => {
-  const [path, setPath] = useState<LatLongCoordinates[]>();
+  const [path, setPath] = useState<LatLongCoordinates[] | undefined>();
+  const [timerActive, setTimerActive] = useState<Boolean>(false);
 
   function updateGeolocation(position: GeolocationPosition) {
     setPath((prevPath) => [
@@ -18,9 +20,13 @@ const Geolocate: React.FC = () => {
     alert(error.message);
   }
 
+  function flipTimerState() {
+    setTimerActive((prevTimeState) => !prevTimeState);
+  }
+
   useEffect(() => {
     const locationInterval = setInterval(() => {
-      if (navigator.geolocation) {
+      if (navigator.geolocation && timerActive) {
         navigator.geolocation.getCurrentPosition(
           updateGeolocation,
           displayError
@@ -29,19 +35,19 @@ const Geolocate: React.FC = () => {
     }, 2500);
 
     return () => clearInterval(locationInterval);
-  }, []);
+  }, [timerActive]);
 
   useEffect(() => {
     console.log(path);
-  }, [path]);
+  }, [path, timerActive]);
 
   return (
     <div>
-      {path?.map((coordinate) => (
-        <div>
-          <h3>{coordinate.latitude} {coordinate.longitude}</h3>
-        </div>
-      ))}
+      <button onClick={flipTimerState}>
+        {!timerActive ? "Start" : "Stop"}
+      </button>
+
+      <DisplayCoordinates coordinates={path} />
     </div>
   );
 };
