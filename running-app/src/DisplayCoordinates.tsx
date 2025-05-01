@@ -10,25 +10,24 @@ const DisplayCoordinates: React.FC<DisplayCoordinatesProps> = ({
 }) => {
   const scale = 100;
 
-  const maxX = Math.max(...(coordinates?.map((coord) => coord.latitude) ?? []));
-  const minX = Math.min(...(coordinates?.map((coord) => coord.latitude) ?? []));
-  const maxY = Math.max(...(coordinates?.map((coord) => coord.latitude) ?? []));
-  const minY = Math.min(...(coordinates?.map((coord) => coord.latitude) ?? []));
+  const maxLat = Math.max(...(coordinates?.map((coord) => coord.latitude) ?? []));
+  const minLat = Math.min(...(coordinates?.map((coord) => coord.latitude) ?? []));
+  const maxLong = Math.max(...(coordinates?.map((coord) => coord.longitude) ?? []));
+  const minLong = Math.min(...(coordinates?.map((coord) => coord.longitude) ?? []));
 
   function normalizeCoordinate(
     coordinate: LatLongCoordinates
   ): LatLongCoordinates {
     return {
-      latitude: ((maxX - coordinate.latitude) / Math.abs(maxX - minX)) * scale,
-      longitude:
-        ((maxY - coordinate.longitude) / Math.abs(maxY - minY)) * scale,
-    };
+        latitude: Math.abs((coordinate.latitude - minLat) / (maxLat - minLat)) * scale,
+        longitude: Math.abs((coordinate.longitude - minLong) / (maxLong - minLong)) * scale,
+      };
   }
 
   function drawLine(point1: LatLongCoordinates, point2: LatLongCoordinates) {
     point1 = normalizeCoordinate(point1);
     point2 = normalizeCoordinate(point2);
-
+    
     const x1 = point1.latitude;
     const x2 = point2.latitude;
     const y1 = point1.longitude;

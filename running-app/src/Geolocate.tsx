@@ -37,15 +37,14 @@ const Geolocate: React.FC = () => {
     return () => clearInterval(locationInterval);
   }, [timerActive]);
 
-  useEffect(() => {
-    console.log(path);
-  }, [path, timerActive]);
-
   return (
     <div>
       <button onClick={flipTimerState}>
         {!timerActive ? "Start" : "Stop"}
       </button>
+
+      <DisplayCoordinates coordinates={path} />
+
       <div>
         {path?.map((coordinate) => (
           <div>
@@ -55,7 +54,6 @@ const Geolocate: React.FC = () => {
           </div>
         ))}
       </div>
-      <DisplayCoordinates coordinates={path} />
     </div>
   );
 };
