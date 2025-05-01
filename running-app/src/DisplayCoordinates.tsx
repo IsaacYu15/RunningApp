@@ -14,20 +14,16 @@ const DisplayCoordinates: React.FC<DisplayCoordinatesProps> = ({
   const minLat = Math.min(...(coordinates?.map((coord) => coord.latitude) ?? []));
   const maxLong = Math.max(...(coordinates?.map((coord) => coord.longitude) ?? []));
   const minLong = Math.min(...(coordinates?.map((coord) => coord.longitude) ?? []));
+  const latDiff = maxLat - minLat;
+  const longDiff = maxLong - minLong;
+  const maxDiff = Math.max(latDiff, longDiff);
 
   function normalizeCoordinate(
     coordinate: LatLongCoordinates
   ): LatLongCoordinates {
-
-    const latDiff = maxLat - minLat;
-    const longDiff = maxLong - minLong;
-
-    const maxDiff = Math.max(latDiff, longDiff);
-
-    //percentage as diff => lat long proprtionate => to a specific scale
     return {
-        latitude: Math.abs((coordinate.latitude - minLat) / latDiff) * (latDiff / maxDiff) * scale,
-        longitude: Math.abs((coordinate.longitude - minLong) / longDiff) * (longDiff / maxDiff) * scale,
+        latitude: Math.abs((coordinate.latitude - minLat) / maxDiff) * scale,
+        longitude: Math.abs((coordinate.longitude - minLong) / maxDiff) * scale,
       };
   }
 
