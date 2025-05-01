@@ -37,6 +37,10 @@ const Geolocate: React.FC = () => {
     return () => clearInterval(locationInterval);
   }, [timerActive]);
 
+  useEffect(() => {
+    console.log(path);
+  }, [path, timerActive]);
+
   return (
     <div>
       <button onClick={flipTimerState}>
