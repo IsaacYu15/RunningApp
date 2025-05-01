@@ -47,10 +47,7 @@ const Geolocate: React.FC = () => {
         {!timerActive ? "Start" : "Stop"}
       </button>
 
-      {
-        !timerActive && (<DisplayCoordinates coordinates={path} />)
-      }
-      
+      {!timerActive && <DisplayCoordinates coordinates={path} />}
 
       <div>
         {path?.map((coordinate) => (
