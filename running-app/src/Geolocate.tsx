@@ -46,7 +46,15 @@ const Geolocate: React.FC = () => {
       <button onClick={flipTimerState}>
         {!timerActive ? "Start" : "Stop"}
       </button>
-
+      <div>
+        {path?.map((coordinate) => (
+          <div>
+            <h3>
+              {coordinate.latitude} {coordinate.longitude}
+            </h3>
+          </div>
+        ))}
+      </div>
       <DisplayCoordinates coordinates={path} />
     </div>
   );
