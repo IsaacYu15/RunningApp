@@ -8,12 +8,20 @@ interface DisplayCoordinatesProps {
 const DisplayCoordinates: React.FC<DisplayCoordinatesProps> = ({
   coordinates,
 }) => {
-  const scale = 100;
+  const scale = 500;
 
-  const maxLat = Math.max(...(coordinates?.map((coord) => coord.latitude) ?? []));
-  const minLat = Math.min(...(coordinates?.map((coord) => coord.latitude) ?? []));
-  const maxLong = Math.max(...(coordinates?.map((coord) => coord.longitude) ?? []));
-  const minLong = Math.min(...(coordinates?.map((coord) => coord.longitude) ?? []));
+  const maxLat = Math.max(
+    ...(coordinates?.map((coord) => coord.latitude) ?? [])
+  );
+  const minLat = Math.min(
+    ...(coordinates?.map((coord) => coord.latitude) ?? [])
+  );
+  const maxLong = Math.max(
+    ...(coordinates?.map((coord) => coord.longitude) ?? [])
+  );
+  const minLong = Math.min(
+    ...(coordinates?.map((coord) => coord.longitude) ?? [])
+  );
   const latDiff = maxLat - minLat;
   const longDiff = maxLong - minLong;
   const maxDiff = Math.max(latDiff, longDiff);
@@ -22,48 +30,66 @@ const DisplayCoordinates: React.FC<DisplayCoordinatesProps> = ({
     coordinate: LatLongCoordinates
   ): LatLongCoordinates {
     return {
-        latitude: Math.abs((coordinate.latitude - minLat) / maxDiff) * scale,
-        longitude: Math.abs((coordinate.longitude - minLong) / maxDiff) * scale,
-      };
+      latitude: Math.abs((coordinate.latitude - minLat) / maxDiff) * scale,
+      longitude: Math.abs((coordinate.longitude - minLong) / maxDiff) * scale,
+    };
   }
 
-  function drawLine(point1: LatLongCoordinates, point2: LatLongCoordinates) {
-    point1 = normalizeCoordinate(point1);
-    point2 = normalizeCoordinate(point2);
-    
-    const x1 = point1.latitude;
-    const x2 = point2.latitude;
-    const y1 = point1.longitude;
-    const y2 = point2.longitude;
+  function connectPoints(
+    ctx: CanvasRenderingContext2D,
+    points: LatLongCoordinates[]
+  ) {
+    const normalizeStart = normalizeCoordinate(points[0]);
 
-    const line = document.createElement("div") as HTMLDivElement;
+    ctx.beginPath();
+    ctx.moveTo(normalizeStart.latitude, normalizeStart.longitude);
 
-    const length = Math.hypot(x2 - x1, y2 - y1);
-    const angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
+    for (let i = 1; i < points.length; i++) {
+      const normalizeCurr = normalizeCoordinate(points[i]);
+      ctx.lineTo(normalizeCurr.latitude, normalizeCurr.longitude);
+    }
 
-    line.style.width = `${length}px`;
-    line.style.left = `${x1}px`;
-    line.style.top = `${y1}px`;
-    line.style.transform = `rotate(${angle}deg)`;
-
-    line.style.position = `absolute`;
-    line.style.height = `2px`;
-    line.style.backgroundColor = `black`;
-    line.style.transformOrigin = `0 0`;
-
-    const parent = document.getElementById("lineContainer") as HTMLDivElement;
-    parent.appendChild(line);
+    ctx.stroke();
   }
 
   useEffect(() => {
-    if (coordinates) {
-      for (let i = 0; i < coordinates.length - 1; i++) {
-        drawLine(coordinates[i], coordinates[i + 1]);
-      }
-    }
+    const canvas = document.getElementById("pointCanvas") as HTMLCanvasElement;
+    const ctx = canvas.getContext("2d");
+
+    if (!(coordinates && ctx)) return;
+
+    //prepare canvas dimensions
+    var dpr = window.devicePixelRatio || 1;
+    var rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.scale(dpr, dpr);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    //gen path
+    connectPoints(ctx, coordinates);
+
+    //fill
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = 5;
+    ctx.stroke();
+
+    ctx.closePath();
+    ctx.fillStyle = "rgb(90, 90, 90)";
+    ctx.fill();
+    
   }, [coordinates]);
 
-  return <div id="lineContainer"></div>;
+  return (
+    <canvas
+      id="pointCanvas"
+      style={{
+        width: `${scale}px`,
+        height: `${scale}px`,
+        border: "1px solid black",
+      }}
+    />
+  );
 };
 
 export default DisplayCoordinates;

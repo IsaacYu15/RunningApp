@@ -4,28 +4,22 @@ import DisplayCoordinates from "./DisplayCoordinates";
 import SampleData from "./SampleData";
 
 const Geolocate: React.FC = () => {
-  const [path, setPath] = useState<LatLongCoordinates[] | undefined>();
+  const [path, setPath] = useState<LatLongCoordinates[]>();
   const [timerActive, setTimerActive] = useState<Boolean>(false);
 
   function updateGeolocation(position: GeolocationPosition) {
-
     setPath((prevPath) => {
+      const newLat = position.coords.latitude;
+      const newLong = position.coords.longitude;
 
-      const lastEntry: LatLongCoordinates | undefined = prevPath?.[prevPath.length - 1];
-
-      if (
-        lastEntry &&
-        position.coords.latitude === lastEntry.latitude &&
-        position.coords.longitude === lastEntry.longitude
-      ) {
+      if (prevPath && prevPath[prevPath.length - 1].latitude == newLat && prevPath[prevPath.length - 1].longitude == newLong)
         return prevPath;
-      }
 
       return [
         ...(prevPath ?? []),
         {
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
+          latitude: newLat,
+          longitude: newLong,
         },
       ];
     });
@@ -40,21 +34,25 @@ const Geolocate: React.FC = () => {
   }
 
   useEffect(() => {
-    const locationInterval = setInterval(() => {
-      if (navigator.geolocation && timerActive) {
-        navigator.geolocation.getCurrentPosition(
-          updateGeolocation,
-          displayError
-        );
-      }
-    }, 2500);
+    let watchId : number;
 
-    return () => clearInterval(locationInterval);
+    if (navigator.geolocation && timerActive) {
+      watchId = navigator.geolocation.watchPosition(
+        updateGeolocation,
+        displayError,
+        {
+          enableHighAccuracy: true,
+          maximumAge: 1000,
+          timeout: 5000
+        }
+      )
+    }
+
+    return () => {
+      if (watchId)
+        navigator.geolocation.clearWatch(watchId);
+    }
   }, [timerActive]);
-
-  useEffect(() => {
-    console.log(path);
-  }, [path, timerActive]);
 
   return (
     <div>
