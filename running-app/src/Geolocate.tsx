@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { LatLongCoordinates } from "./Types";
 import DisplayCoordinates from "./DisplayCoordinates";
-import SampleData from "./SampleData";
+//import SampleData from "./SampleData";
 
 const Geolocate: React.FC = () => {
   const [path, setPath] = useState<LatLongCoordinates[]>();
