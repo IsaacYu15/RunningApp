@@ -4,19 +4,23 @@ import DisplayCoordinates from "./DisplayCoordinates";
 //import SampleData from "./SampleData";
 
 const Geolocate: React.FC = () => {
-  const [path, setPath] = useState<LatLongCoordinates[]>();
+  const [coordinates, setCoordinates] = useState<LatLongCoordinates[]>();
   const [timerActive, setTimerActive] = useState<Boolean>(false);
 
   function updateGeolocation(position: GeolocationPosition) {
-    setPath((prevPath) => {
+    setCoordinates((prevCoordinates) => {
       const newLat = position.coords.latitude;
       const newLong = position.coords.longitude;
 
-      if (prevPath && prevPath[prevPath.length - 1].latitude == newLat && prevPath[prevPath.length - 1].longitude == newLong)
-        return prevPath;
+      if (
+        prevCoordinates &&
+        prevCoordinates[prevCoordinates.length - 1].latitude == newLat &&
+        prevCoordinates[prevCoordinates.length - 1].longitude == newLong
+      )
+        return prevCoordinates;
 
       return [
-        ...(prevPath ?? []),
+        ...(prevCoordinates ?? []),
         {
           latitude: newLat,
           longitude: newLong,
@@ -30,11 +34,31 @@ const Geolocate: React.FC = () => {
   }
 
   function flipTimerState() {
-    setTimerActive((prevTimeState) => !prevTimeState);
+    setTimerActive((prevTimeState) => {
+      const updatedState = !prevTimeState;
+
+      if (!updatedState && coordinates) saveCoordinates();
+
+      return updatedState;
+    });
+  }
+
+  async function saveCoordinates() {
+    try {
+      const response = await fetch("http://127.0.0.1:5000", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ coordinates }),
+      });
+    } catch (error) {
+      console.log("error with saving coordinates!");
+    }
   }
 
   useEffect(() => {
-    let watchId : number;
+    let watchId: number;
 
     if (navigator.geolocation && timerActive) {
       watchId = navigator.geolocation.watchPosition(
@@ -43,15 +67,14 @@ const Geolocate: React.FC = () => {
         {
           enableHighAccuracy: true,
           maximumAge: 1000,
-          timeout: 5000
+          timeout: 5000,
         }
-      )
+      );
     }
 
     return () => {
-      if (watchId)
-        navigator.geolocation.clearWatch(watchId);
-    }
+      if (watchId) navigator.geolocation.clearWatch(watchId);
+    };
   }, [timerActive]);
 
   return (
@@ -60,10 +83,10 @@ const Geolocate: React.FC = () => {
         {!timerActive ? "Start" : "Stop"}
       </button>
 
-      {!timerActive && <DisplayCoordinates coordinates={path} />}
+      {!timerActive && <DisplayCoordinates coordinates={coordinates} />}
 
       <div>
-        {path?.map((coordinate) => (
+        {coordinates?.map((coordinate) => (
           <div>
             <h3>
               {coordinate.latitude} {coordinate.longitude}
