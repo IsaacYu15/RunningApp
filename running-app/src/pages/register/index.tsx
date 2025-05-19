@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { ServerRoutes as ServerRouteName } from "../../constants/routes"
 
 const Login = () => {
   const [username, setUsername] = useState<string>("");
@@ -7,16 +8,15 @@ const Login = () => {
 
   const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    if (isLogin) 
-      tryLogin();
-    else
-      trySignUp();
+    tryRegister();
   };
 
-  async function tryLogin() {
+  async function tryRegister() {
+
+    const route = isLogin ? ServerRouteName.LOGIN : ServerRouteName.SIGNUP;
+
     try {
-      const response = await fetch("http://127.0.0.1:5000/login", {
+      const response = await fetch(route, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -24,28 +24,14 @@ const Login = () => {
         body: JSON.stringify({ username: username, password: password }),
       });
 
-      console.log(response);
+      const data: { success: boolean } = await response.json();
+      console.log(data.success);
+      
     } catch (error) {
       console.log("error with logging in");
     }
   }
-
-  async function trySignUp() {
-    try {
-      const response = await fetch("http://127.0.0.1:5000/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username: username, password: password }),
-      });
-
-      console.log(response);
-    } catch (error) {
-      console.log("error with logging in");
-    }
-  }
-
+  
   return (
     <section>
       <h1> {isLogin ? "Login" : "Sign Up"}</h1>
