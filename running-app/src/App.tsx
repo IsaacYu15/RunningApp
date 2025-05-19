@@ -1,8 +1,7 @@
-import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import History from "./pages/history";
 import Home from "./pages/home";
-import Login from "./pages/login";
+import Login from "./pages/register";
 import Record from "./pages/record";
 import {Route as RouteNames} from "./constants/routes";
 
