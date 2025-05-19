@@ -3,7 +3,7 @@ import { LatLongCoordinates } from "../../components/Types";
 import DisplayCoordinates from "../../components/displayCoordinates";
 //import SampleData from "./SampleData";
 
-const Geolocate: React.FC = () => {
+const Record: React.FC = () => {
   const [coordinates, setCoordinates] = useState<LatLongCoordinates[]>();
   const [timerActive, setTimerActive] = useState<Boolean>(false);
 
@@ -45,7 +45,7 @@ const Geolocate: React.FC = () => {
 
   async function saveCoordinates() {
     try {
-      const response = await fetch("http://127.0.0.1:5000", {
+      await fetch("http://127.0.0.1:5000", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -98,4 +98,4 @@ const Geolocate: React.FC = () => {
   );
 };
 
-export default Geolocate;
+export default Record;
