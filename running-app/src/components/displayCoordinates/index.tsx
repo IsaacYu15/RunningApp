@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { LatLongCoordinates } from "./Types";
+import { LatLongCoordinates } from "../Types";
 
 interface DisplayCoordinatesProps {
   coordinates: LatLongCoordinates[] | undefined;

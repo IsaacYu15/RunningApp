@@ -1,5 +1,5 @@
 import "./App.css";
-import Geolocate from "./Geolocate";
+import Geolocate from "./sections/timer";
 
 function App() {
 
