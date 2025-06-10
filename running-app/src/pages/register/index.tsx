@@ -29,8 +29,10 @@ const Login = () => {
         },
         body: JSON.stringify(user),
       });
-      const data: { success: boolean } = await response.json();
-      console.log(data.success);
+
+      const data = await response.json();
+      console.log(data);
+      
     } catch (error) {
       console.log("error with logging in");
     }
