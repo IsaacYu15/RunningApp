@@ -1,15 +1,16 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import {Routes as RouteNames } from  "../../constants/routes";
+import { Routes as RouteNames } from "../../constants/routes";
 
 const Navbar = () => {
-  return <Container>
-    <StyledLink to={RouteNames.HOME}>Home</StyledLink>
-    <StyledLink to={RouteNames.HISTORY}>History</StyledLink>
-    <StyledLink to={RouteNames.RECORD}>Record</StyledLink>
-    <StyledLink to={RouteNames.LOGIN}>Login</StyledLink>
-  </Container>;
+  return (
+    <Container>
+      <StyledLink to={RouteNames.HOME}>Home</StyledLink>
+      <StyledLink to={RouteNames.HISTORY}>History</StyledLink>
+      <StyledLink to={RouteNames.RECORD}>Record</StyledLink>
+      <StyledLink to={RouteNames.LOGIN}>Login</StyledLink>
+    </Container>
+  );
 };
 
 const Container = styled.nav`

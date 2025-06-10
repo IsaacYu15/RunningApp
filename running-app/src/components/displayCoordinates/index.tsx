@@ -22,6 +22,7 @@ const DisplayCoordinates: React.FC<DisplayCoordinatesProps> = ({
   const minLong = Math.min(
     ...(coordinates?.map((coord) => coord.longitude) ?? [])
   );
+  
   const latDiff = maxLat - minLat;
   const longDiff = maxLong - minLong;
   const maxDiff = Math.max(latDiff, longDiff);

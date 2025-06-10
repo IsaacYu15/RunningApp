@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { ServerRoutes as ServerRouteName } from "../../constants/routes"
+import { ServerRoutes as ServerRoute } from "../../constants/routes";
 
 const Login = () => {
   const [username, setUsername] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [isLogin, setIsLogin] = useState<boolean>(true);
 
@@ -12,8 +13,13 @@ const Login = () => {
   };
 
   async function tryRegister() {
+    const route = isLogin ? ServerRoute.LOGIN : ServerRoute.SIGNUP;
 
-    const route = isLogin ? ServerRouteName.LOGIN : ServerRouteName.SIGNUP;
+    const user = {
+      username: username,
+      email: email,
+      password: password,
+    };
 
     try {
       const response = await fetch(route, {
@@ -21,17 +27,15 @@ const Login = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username: username, password: password }),
+        body: JSON.stringify(user),
       });
-
       const data: { success: boolean } = await response.json();
       console.log(data.success);
-      
     } catch (error) {
       console.log("error with logging in");
     }
   }
-  
+
   return (
     <section>
       <h1> {isLogin ? "Login" : "Sign Up"}</h1>
@@ -45,6 +49,14 @@ const Login = () => {
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
+          />
+        </label>
+        <label>
+          Email:
+          <input
+            type="text"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </label>
         <label>
