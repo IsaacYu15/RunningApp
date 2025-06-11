@@ -1,20 +1,14 @@
 from flask import jsonify, request, session
 from passlib.hash import pbkdf2_sha256
 from app import db
+from session.models import SessionManager
 import uuid
 
 class User:
 
-    def intialize_session(self, user):
-        #do not store user password in session
-        del user['password']
+    sessionManager = SessionManager()
 
-        session['logged_in'] = True
-        session['user'] = user
-        return jsonify(user), 200
-
-    def sign_up(self):
-
+    def signup(self):
         #get user data from request
         data = request.get_json()
         user = {
@@ -36,7 +30,7 @@ class User:
         
         return jsonify({"error": "Sign up failed"}), 400
 
-    def sign_out(self):
+    def signout(self):
         session.clear()
         return jsonify({"message": "Signed out successful"}), 200
 
@@ -44,14 +38,15 @@ class User:
         #get user data from request
         data = request.get_json()
         user = {
-            "email": data.get('email'),
-            "password": data.get('password')
+            "username": data.get('username'),
+            "password": data.get('password'),
+            "email": data.get('email')
         }
 
         #if the user with such email exists, verify the password
         potentialUser = db.users.find_one({'email': user['email']})
 
         if potentialUser and pbkdf2_sha256.verify(user['password'], potentialUser['password']):
-            return self.intialize_session(user)
+            return self.sessionManager.initialize_session(user)
 
         return jsonify({"error": "user not found"}), 401

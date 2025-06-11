@@ -5,7 +5,7 @@ user = User()
 
 @app.route('/signup', methods=['POST'])
 def signup():
-    return user.sign_up()
+    return user.signup()
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -13,4 +13,4 @@ def login():
 
 @app.route('/signout')
 def signout():
-    return user.sign_out()
+    return user.signout()

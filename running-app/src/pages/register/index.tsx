@@ -1,11 +1,21 @@
-import React, { useState } from "react";
-import { ServerRoutes as ServerRoute } from "../../constants/routes";
+import React, { useEffect, useState } from "react";
+import { RegisterRoutes as RegisterRoutes } from "../../constants/routes";
+import { User as User } from "../../constants/user";
 
 const Login = () => {
+  //input fields
   const [username, setUsername] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [isLogin, setIsLogin] = useState<boolean>(true);
+  const [isSignUp, setIsSignUp] = useState<boolean>(false);
+
+  //session details
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
+  const [userDetails, setUserDetails] = useState<User>();
+
+  useEffect(() => {
+    fetchSession();
+  }, []);
 
   const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -13,7 +23,7 @@ const Login = () => {
   };
 
   async function tryRegister() {
-    const route = isLogin ? ServerRoute.LOGIN : ServerRoute.SIGNUP;
+    const route = isSignUp ? RegisterRoutes.SIGNUP : RegisterRoutes.LOGIN;
 
     const user = {
       username: username,
@@ -27,21 +37,51 @@ const Login = () => {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify(user),
       });
 
       const data = await response.json();
       console.log(data);
-      
     } catch (error) {
       console.log("error with logging in");
+    }
+
+    fetchSession();
+  }
+
+  async function fetchSession() {
+    try {
+      const response = await fetch(RegisterRoutes.FETCHSESSION, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      //set session data, if available
+      const data = await response.json();
+      const loggedIn = data.loggedIn;
+      setIsLoggedIn(loggedIn);
+
+      if (loggedIn) {
+        const user: User = {
+          name: data.user.username,
+          email: data.user.email,
+        };
+        setUserDetails(user);
+      }
+
+    } catch (error) {
+      console.log("error with fetching session data");
     }
   }
 
   return (
     <section>
-      <h1> {isLogin ? "Login" : "Sign Up"}</h1>
-      <button onClick={() => setIsLogin((currState) => !currState)}>
+      <h1> {isLoggedIn ? "Sign Out" : isSignUp ? "Sign Up" : "Login"}</h1>
+      <button onClick={() => setIsSignUp((currState) => !currState)}>
         toggle
       </button>
       <form onSubmit={handleFormSubmit}>
